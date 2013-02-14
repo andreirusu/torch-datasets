@@ -403,6 +403,43 @@ end
 
 
 --------------------------------------------------------------------------
+-- Cached pipeline source: samples a random image from a cached dataset
+--------------------------------------------------------------------------
+
+--[[ In some use-cases it may be efficient to apply cetain pre-processing 
+     stages offline on the full dataset, discard some parts of it and 
+     save for later use, eventually split in chunks which fit in memory;
+     in order to sample one of those chunks, I added a random image 
+     selector. It look at the sample.source key, assuming it provides a
+     reference to a table with the following format:
+		{[filename]    = table - size: 2751
+		 [base_path]   = string : ....
+		 [data]        = table - size: 2751
+		 [labels]      = table - size: 2751
+		 [classes]     = table - size: 35
+		 [label_count] = table - size: 35}
+     This pipeline component returns one sample as table with the data &
+     label keys populate with a random image from the source.
+]]
+
+function pipe.random_image(sample)
+   if sample == nil then return nil end
+
+   local rand_id = torch.ceil((#(sample.source.data))*torch.rand(1)[1])
+   local data = sample.source.data[rand_id]:double()/255
+   sample.filename = sample.source.filename[rand_id]
+   sample.label	= sample.source.labels[rand_id]
+   local dims = data:size()
+   sample.width = dims[#dims]
+   sample.height = dims[#dims-1]
+   sample.data = data
+   return sample
+end
+
+
+
+
+--------------------------------------------------------------------------
 -- Transformation stages
 --------------------------------------------------------------------------
 
