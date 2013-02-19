@@ -427,7 +427,7 @@ function pipe.random_image(sample)
 
    local rand_id = torch.ceil((#(sample.source.data))*torch.rand(1)[1])
    local data = sample.source.data[rand_id]:double()/255
-   sample.filename = sample.source.filename[rand_id]
+   sample.filename = sample.source.filename[rand_id][1]
    sample.label	= sample.source.labels[rand_id]
    local dims = data:size()
    sample.width = dims[#dims]
