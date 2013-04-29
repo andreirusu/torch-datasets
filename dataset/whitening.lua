@@ -5,7 +5,7 @@ require 'dataset'
 
 -- ZCA-Whitening
 function dataset.zca_whiten(data, means, P)
-	local auxdata = data:clone()
+    local auxdata = data:clone()
     local dims = data:size()
     local nsamples = dims[1]
     local n_dimensions = data:nElement() / nsamples
@@ -19,15 +19,15 @@ function dataset.zca_whiten(data, means, P)
         local ce, cv = unsup.pcacov(auxdata)
         ce:add(1e-5):sqrt():pow(-1)
         local diag = torch.diag(ce)
-	    P = torch.mm(cv, diag)
-	    P = torch.mm(P, cv:t())
+        P = torch.mm(cv, diag)
+        P = torch.mm(P, cv:t())
     end
     -- remove the means
-	auxdata:add(torch.ger(torch.ones(nsamples), means):mul(-1))
+    auxdata:add(torch.ger(torch.ones(nsamples), means):mul(-1))
     -- rotate in ZCA space
-	auxdata = torch.mm(auxdata, P)
-	
+    auxdata = torch.mm(auxdata, P)
+
     data:copy(auxdata:resizeAs(data))
-	return means, P
+    return means, P
 end
 
