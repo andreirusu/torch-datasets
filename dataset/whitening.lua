@@ -18,7 +18,7 @@ function dataset.zca_whiten(data, means, P)
         means = torch.mean(auxdata, 1):squeeze()
         -- compute transformation matrix P if not provided
         local ce, cv = unsup.pcacov(auxdata)
-        local ce = ce:add(1e-5):sqrt()
+        ce:add(1e-5):sqrt()
         local invce = ce:clone():pow(-1)
         local invdiag = torch.diag(invce)
         P = torch.mm(cv, invdiag)
@@ -26,8 +26,8 @@ function dataset.zca_whiten(data, means, P)
 
         -- compute inverse of the transformation
         local diag = torch.diag(ce)
-        invP = torch.mm(cv:t(), diag)
-        invP = torch.mm(invP, cv)
+        invP = torch.mm(cv, diag)
+        invP = torch.mm(invP, cv:t())
     end
     -- remove the means
     auxdata:add(torch.ger(torch.ones(nsamples), means):mul(-1))
