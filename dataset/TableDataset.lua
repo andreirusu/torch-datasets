@@ -386,11 +386,13 @@ end
 -- normalized. If no channels are specified all channels are jointly whitened.
 function TableDataset:zca_whiten(...)
    local channels = {...}
+   local mean, P, invP
    if #channels == 0 then
-      dataset.zca_whiten(self.dataset.data)
+      mean, P, invP = dataset.zca_whiten(self.dataset.data)
    else
       for _,c in ipairs(channels) do
-         dataset.zca_whiten(self.dataset.data[{ {}, c, {}, {} }])
+         mean[c], P[c], invP[c] = dataset.zca_whiten(self.dataset.data[{ {}, c, {}, {} }])
       end
    end
+   return mean, P, invP
 end
